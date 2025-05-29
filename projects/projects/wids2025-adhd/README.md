@@ -14,3 +14,6 @@ Predict two targets based on brain imaging and survey data:
 
 **Result:**  
 Top 35% on the leaderboard 🎉
+
+
+- **[Kaggle Notebook](https://www.kaggle.com/code/kseniiaaver/wids-2025-adhd-gender-classification-xgboost)**
