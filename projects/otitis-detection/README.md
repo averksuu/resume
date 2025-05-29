@@ -9,8 +9,10 @@ This interactive demo uses a quantized TFLite model (~5 MB) for Otitis Media Det
    pip install -r requirements.txt
    ```
 
-2. Open `Otitis_Inference_Interactive_TFLite.ipynb` in Jupyter or Colab.  
-3. Run all cells and upload your ear image via the widget to see prediction.
+2. Open `Otitis_Inference_Interactive_TFLite.ipynb` in Jupyter or Colab.
+   [![Open in Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/averksuu/resume/blob/main/projects/otitis-detection/otitis.ipynb)
+
+4. Run all cells and upload your ear image via the widget to see prediction.
 
 ## Project Structure
 
