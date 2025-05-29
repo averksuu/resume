@@ -16,7 +16,7 @@ All of my completed courses and programs are available below:
 
 | Course / Program                                                | Institution                  | Date       | Link                                          |
 |-----------------------------------------------------------------|------------------------------|------------|-----------------------------------------------|
-| Data Science, Neural Networks & AI                              | Terra AI Neural University   |2024-2025   | [Certificate](certificates/TerraAI_Certificate.pdf)           |
+| Data Science, Neural Networks & AI                              | Terra AI Neural University   |2024-2025   | [Certificate](certificates/TerraAI_Certificate.pdf) \| [EN translation](certificates/TerraAI_Certificate_EN.md) |          
 | Machine Learning Specialization                                 | DeepLearning.AI & Stanford   | Mar 2025   | [Certificate](certificates/ML_Specialization.pdf)             |
 | Natural Language Processing Specialization                      | DeepLearning.AI & Stanford   | May 2025   | [Certificate](certificates/NLP_Specialization.pdf)            |
 | Yandex ML Bootcamp “Training 3.0”                               | Yandex                       | 2025       | [Certificate](certificates/Yandex_ML_Bootcamp_Certificate.pdf) |
