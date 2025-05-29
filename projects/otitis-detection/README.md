@@ -4,6 +4,15 @@ This folder contains everything needed to reproduce, explore and demo the Otitis
 
 ---
 
+## 💡 Project Overview
+
+- **Problem:** Otitis media (acute or chronic middle ear infection) is a common condition, especially in children, requiring timely diagnosis.  
+- **Data:** High-resolution otoscopic photographs labeled as “Otitis” or “Normal.”  
+- **Approach:** Preprocess and augment images (rotations, flips, brightness/contrast), then train a CNN with four convolutional blocks on 128×128 RGB inputs.  
+- **Performance:** Achieved **75%** test accuracy with fast training times and modest computational requirements.  
+- **Impact:** Provides an automated screening tool to assist clinicians and support telemedicine applications.
+
+
 ## 📓 Experiment Log
 
 Detailed experiments, model training, comparison and best-model selection are documented in the “Experiment Log” notebook:  
