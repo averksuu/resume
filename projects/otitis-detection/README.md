@@ -1,18 +1,33 @@
-# Otitis Media Detection — Interactive Demo (TFLite)
+# Otitis Media Detection
 
-This interactive demo uses a quantized TFLite model (~5 MB) for Otitis Media Detection.
+This folder contains everything needed to reproduce, explore and demo the Otitis Media Detection project.
 
-## How to Run
+---
 
-1. Install dependencies:
-   ```bash
-   pip install -r requirements.txt
-   ```
+## 📓 Experiment Log
 
-2. Open `Otitis_Inference_Interactive_TFLite.ipynb` in Jupyter or Colab.
-   [![Open in Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/1waInlrtFBBrWfZmx-O57O9EB3INjh8Hd?usp=sharing)
+Detailed experiments, model training, comparison and best-model selection are documented in the “Experiment Log” notebook:  
+**[Otitis_Media_Experiments.ipynb](./Otitis_Media_Experiments.ipynb)**
 
-4. Run all cells and upload your ear image via the widget to see prediction.
+---
+
+## 🎯 Interactive Demo
+
+Try the final model right in your browser — upload your own ear image and see “Otitis” vs. “Normal” in real time:  
+**[Interactive Inference Notebook](./otitis.ipynb)**
+
+---
+
+## 📊 Presentation
+
+Project overview, motivation, methodology and results in slides:  
+**[Google Slides Presentation](https://docs.google.com/presentation/d/1gsz0eFgTKw0zCEPLxbT97Wyz9BMc4WxRIgOsalq3pnc/edit?usp=sharing)**
+
+---
+
+## 📂 File Structure
+
+
 
 ## Project Structure
 
