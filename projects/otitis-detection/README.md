@@ -14,7 +14,8 @@ Detailed experiments, model training, comparison and best-model selection are do
 ## 🎯 Interactive Demo
 
 Try the final model right in your browser — upload your own ear image and see “Otitis” vs. “Normal” in real time:  
-**[Interactive Inference Notebook](./otitis.ipynb)**
+[![Open in Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/1waInlrtFBBrWfZmx-O57O9EB3INjh8Hd?usp=sharing)
+
 
 ---
 
