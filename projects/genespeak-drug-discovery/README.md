@@ -27,11 +27,17 @@ genespeak-drug-discovery/
 │   └── f_p_smalltargets.ipynb
 ├── f_r/
 │   └── f_r_onalldata_withcellline.ipynb
+└── repository-root/
 └── making_data/
-    ├── analysis1.ipynb
-    ├── tahoe_counts_per_cell_line.csv
-    ├── tahoe_counts_per_drug.csv
-    └── tahoe_counts_per_drug_cell_line.csv
+    ├── README.md                   
+    ├── analysis1.ipynb              # exploratory analysis / preparation notebook
+    ├── cell2id.csv                  # mapping: cell_name -> integer id
+    ├── cell_embeddings.npy          # precomputed cell embeddings (numpy)
+    ├── cell_line_metadata.parquet   # cell line metadata table
+    ├── drug_metadata.parquet        # drug metadata table
+    ├── drug_smiles_emb_all.pt       # SMILES/drug embeddings (PyTorch)
+    └── gene_metadata.parquet        # gene metadata table
+
 ```
 <br/>
 <br/>
@@ -86,16 +92,6 @@ genespeak-drug-discovery/
 <br/>
 
 ## 🧪 Experiments
-
-### Experimental Setup
-- **Data Split**
-  - 약물–세포주 쌍 기준 Train / Validation / Test 분할
-  
-- **Evaluation Strategy**
-  - 전체(Global) 성능 지표
-  - 세포주별 계층화 지표
-  - 약물별 계층화 지표
-<br/>
 
 ---
 
@@ -157,17 +153,4 @@ f_r/f_r_onalldata_withcellline.ipynb
 <br/>
 <br/>
 
-## 🛠 Requirements
 
-```
-pip install torch numpy pandas pyarrow scanpy scipy scikit-learn matplotlib tqdm
-```
-<br/>
-<br/>
-
-## 🧩 Notes
-
-- (약물, 세포주) 데이터 불균형이 매우 심하므로 필터링이 필수적입니다.
-- SMILES 임베딩은 약물 메타데이터의 정렬 순서와 반드시 일치해야 합니다.
-<br/>
-<br/>
