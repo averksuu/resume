@@ -45,7 +45,7 @@ genespeak-drug-discovery/
 ## 🧪 Dataset & Preprocessing
 
 ### Data Source
-- **Tahoe-100M** single-cell perturbation dataset (Parquet format)
+- [TAHOE-100M](https://huggingface.co/datasets/tahoebio/Tahoe-100M) single-cell perturbation dataset (Parquet format)
 - 각 샘플은 `(drug, cell line, gene)` 단위의 발현 반응 정보를 포함
 <br/>
 
