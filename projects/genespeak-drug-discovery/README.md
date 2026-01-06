@@ -67,58 +67,77 @@ genespeak-drug-discovery/
 <br/>
 <br/>
 
-## 🧠 Methods
-### Inverse Retrieval (f_p 또는 DRUG CANDIDATE 모듈)
-**목표:** 주어진 **쿼리 시그니처(ΔX_query)** 에 대해, 이를 가장 잘 설명(또는 재현)할 수 있는 **후보 약물**을 검색/랭킹합니다.
+## 🧠 Methods (Two-Module Bidirectional Pipeline)
 
-- **입력:** 쿼리 ΔExpression signature `ΔX_query`
-- **출력:** 후보 약물들에 대한 점수/랭킹 `score(drug | ΔX_query)`
-- **핵심 아이디어:**  
-  ΔX_query를 임베딩으로 인코딩한 뒤, **정답 약물(positive)** 과는 가깝게, 다른 약물(negatives)과는 멀어지도록 학습합니다.
-
-- **학습 데이터:** (drug, cell line) → 관측 ΔX 를 이용하여  
-  `ΔX` 를 해당 drug의 **positive query** 로 사용하고, 동일 배치/라이브러리 내 다른 drug들을 **negative** 로 샘플링
-
-- **학습 목적함수(예시):**
-  - **Ranking/Contrastive 손실 (InfoNCE):**  
-    `L_rank = -log exp(sim(q, d+)/τ) / Σ exp(sim(q, d_i)/τ)`
-    - `q = Enc(ΔX)` : 시그니처 인코더 출력  
-    - `d+` : 정답 약물 임베딩, `d_i` : negative 약물 임베딩  
-    - `sim(·)` : cosine 또는 dot-product, `τ` : temperature
-  - (선택) **BCE 기반 retrieval 손실:** 후보 약물 전체(또는 sampled set)에 대해 정답/비정답을 분류하도록 보조 학습
-
-> inverse 모듈은 “이 ΔX를 만든(또는 반대로 만들 수 있는) 약이 무엇인가?”를 푸는 **검색/랭킹 모듈**입니다.
-
-### Forward Prediction (Response Prediction; f_r)
-**목표:** 특정 조건에서의 세포 상태(기저 발현)와 약물 정보를 바탕으로, 약물 처리 후 **유전자 발현 변화(ΔX)** 를 예측합니다.
-
-- **입력:**
-  - **기저 발현 프로필** `X_base` (예: DMSO / pre-treatment expression)
-  - **약물 표현** (예: SMILES embedding 또는 drug embedding)
-  - (선택) **cell-line 정보** (cell token/embedding)
-
-- **표현 방식 (Cell2Sentence 스타일):**
-  - 유전자들을 토큰 시퀀스로 구성하고, 각 토큰은
-    - `gene id embedding` + `expression value embedding(또는 bin embedding)`  
-    (+ 필요 시 positional/attribute embedding)
-  - 시퀀스에 `[CELL]` 같은 컨텍스트 토큰을 포함해 cell-specific context를 주입할 수 있음
-
-- **출력:**
-  - 예측된 `\hat{ΔX} ∈ R^G` (G: 사용 유전자 수, 예: HVG)
-  - (대안) `\hat{X_after} = X_base + \hat{ΔX}` 형태로 after-expression을 직접 구성
-
-- **학습 데이터:** `(X_base, drug, cell)` → 관측 `ΔX = X_treated − X_base`
-- **학습 목적함수(예시):**
-  - **재구성(회귀) 손실:** `L_rec = MSE(ΔX, \hat{ΔX})` (또는 Huber)
-  - (선택) **패턴 보존 보조 손실:** cosine 유사도 기반 항 등
+본 프로젝트는 단일세포 전사체 데이터에서 관측되는 **발현 변화(ΔX)** 를 활용해  
+(1) **역문제(Drug Candidate; DC)** 로 탐색 공간을 먼저 줄이고,  
+(2) **정문제(Response Prediction; RP)** 로 후보를 정밀 검증·재랭킹하는 **양방향 예측 파이프라인**을 구성합니다.
 
 ---
-### Inference (실사용 흐름)
-1) 입력으로 받은 `ΔX_query` 에 대해 inverse 모듈로 **Top-K 후보 약물**을 검색  
-2) 각 후보 약물에 대해 f_r로 `\hat{ΔX}(drug, cell)` 를 예측(또는 조건에 맞는 response 시뮬레이션)  
-3) `ΔX_query` 와 `\hat{ΔX}` 의 유사도/오차를 기반으로 **재랭킹(re-ranking)** 하여 최종 후보를 출력
+
+### Data Preprocessing
+- 원시 발현 카운트에 대해 **log 변환 및 정규화** 수행
+- 약물 처리군과 DMSO 대조군의 차이로 **발현 변화 시그니처(ΔX)** 계산
+- 노이즈 감소 및 학습 효율을 위해 **상위 4,000 HVG(고분산 유전자)** 선택
+- 두 모듈은 목적에 따라 **서로 다른 방식으로 토큰화**됩니다.
+  - DC: **ΔX 패턴 자체** 중심
+  - RP: **세포 기저 발현 + 약물 정보 + 세포 정보**를 함께 입력
 
 ---
+
+## 1) Drug Candidate Module (DC) — Inverse Problem (Retrieval / 후보 생성)
+**목표:** “이런 발현 변화(ΔX)를 만들었거나 되돌릴 수 있는 약물은 무엇인가?”라는 **역문제**를 해결합니다.  
+아직 약물이 주어지지 않은 상태에서 시작하며, 관측된 **ΔX 시그니처만**으로 약물 특성을 거꾸로 추론합니다.
+
+- **입력:** 특정 조건에서 관측된 **ΔExpression signature (ΔX)**
+- **출력:** 하나의 Transformer 인코더에서 두 개의 헤드로 분기
+  - **Target head:** 약물의 **생물학적 표적(target) 벡터** 예측
+  - **Structure head:** 약물의 **구조적 특징(SMILES) 벡터** 예측
+- **역할:** 수만 개 약물 후보를 **≤50개 수준**으로 줄이는 1차 필터(탐색 공간 축소)
+
+### DC Training (복합 손실 학습)
+약물의 본질을 여러 관점에서 학습하기 위해 **복합 손실 구조**를 사용합니다.
+- **Cosine Similarity Loss:** 표적 표현의 **의미적 안정성** 학습
+- **Binary Cross-Entropy (BCE) Loss:** 표적의 **존재 유무(멀티라벨)** 학습
+- **InfoNCE Ranking Loss:** 후보 탐색에서 **정답 표적/특성을 상위로 랭킹**하도록 유도
+- **CLIP-style Loss:** 약물의 **화학 구조(“구조 언어”)**와 전사체 반응(“효과 언어”)을  
+  **같은 잠재 공간에서 정렬**하여 구조–효과 관계를 의미적으로 연결
+
+> 핵심: DC는 “하나를 맞히는 분류기”가 아니라, **탐색 공간을 효과적으로 압축하는 retrieval 모듈**입니다.
+
+---
+
+## 2) Response Prediction Module (RP) — Forward Problem (Response Modeling / 검증)
+**목표:** 후보 약물이 주어졌을 때, 병든 세포의 현재 상태를 기준으로  
+약물 처리 후 **유전자 발현 변화(ΔX)** 를 직접 예측하는 **정문제** 모듈입니다.
+
+- **입력(3가지 정보):**
+  1) `[CELL]` 토큰: 세포주의 유전적 배경(세포 컨텍스트)
+  2) `[DRUG]` 토큰: 후보 약물의 화학 구조 정보(예: SMILES 기반 표현)
+  3) 병든 세포의 **기저 발현 프로파일(X_base)**  
+     - **Cell2Sentence 스타일**로 유전자 토큰 시퀀스(유전자 ID + 발현값 표현)로 주입
+- **출력:** 약물 처리 후 **ΔExpression 벡터(ΔX)** 생성
+- **역할:** DC가 제안한 후보가 실제로 의미 있는 반응을 유도하는지 **정량 검증** 및 재랭킹
+
+### RP Training (2-stage: 안정적 수렴 → 핵심 유전자 강조)
+RP의 목표는 평균적으로만 맞추는 것이 아니라, **약물 효과를 대표하는 핵심 유전자**까지 포착하는 것입니다.
+- **Stage 1: MSE Loss**
+  - 전체 유전자 발현(또는 ΔX)의 전반적인 패턴을 **안정적으로 근사**하도록 학습
+- **Stage 2: MSE + Gene Ranking Loss (점진적 추가)**
+  - 약물로 인해 크게 변하는 유전자들이 **상위에 오르도록** 랭킹 손실을 추가
+  - 초기에는 MSE만으로 수렴을 확보한 뒤, 이후 랭킹 손실을 **점진적으로 강화**하여
+    “전체 근사”와 “핵심 유전자 포착”의 균형을 맞춤
+
+---
+
+## End-to-End Inference (파이프라인 동작)
+1) 건강한 세포 vs 병든 세포 발현을 비교해 **병리적 지문(ΔX_query)** 생성  
+2) **DC 모듈**이 ΔX_query로부터 표적/구조 특성을 추론 → **후보 약물 Top-K(≤50)** 생성  
+3) **RP 모듈**이 각 후보 약물에 대해 반응(ΔX)을 시뮬레이션하고,  
+   건강한 상태에 얼마나 가까워지는지 평가 → **최종 치료 후보 랭킹 출력**
+
+---
+
 
 ### Metrics
 
