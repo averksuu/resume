@@ -10,6 +10,8 @@ Applied ML Engineer who turns complex, noisy real-world data into reliable, work
 - [Russian version](resume/Kseniia_RU.pdf)
 
 ## 🧠 Projects
+- [GENESPEAKS drug discovery](https://github.com/averksuu/resume/tree/main/projects/genespeak-drug-discovery)
+- [Paper is all you need](https://github.com/averksuu/resume/tree/main/projects/paper-is-all-you-need)
 - [Otitis Detection](projects/otitis-detection)
 - [WiDS 2025 – ADHD & Gender Prediction](projects/wids2025-adhd)
 
