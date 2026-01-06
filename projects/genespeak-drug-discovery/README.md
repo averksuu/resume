@@ -68,7 +68,7 @@ genespeak-drug-discovery/
 <br/>
 
 ## 🧠 Methods
-### Inverse Retrieval (Drug Candidate Retrieval/Ranking; f_p 또는 f_dc)
+### Inverse Retrieval (Drug Candidate Retrieval/Ranking; f_p 또는 DRUG CANDIDATE 모듈)
 **목표:** 주어진 **쿼리 시그니처(ΔX_query)** 에 대해, 이를 가장 잘 설명(또는 재현)할 수 있는 **후보 약물**을 검색/랭킹합니다.
 
 - **입력:** 쿼리 ΔExpression signature `ΔX_query`
