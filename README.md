@@ -6,8 +6,8 @@ Applied ML Engineer who turns complex, noisy real-world data into reliable, work
 
 
 ## 📄 Resume
-- [English version](resume/Kseniia_EN.pdf)
-- [Russian version](resume/Kseniia_RU.pdf)
+- [English version](https://github.com/averksuu/resume/blob/main/resume/Resumee_eng.pdf)
+- [Korean version](https://github.com/averksuu/resume/blob/main/resume/Resume_kr.pdf)
 
 ## 🧠 Projects
 - [GENESPEAKS drug discovery](https://github.com/averksuu/resume/tree/main/projects/genespeak-drug-discovery)
