@@ -24,18 +24,18 @@
 ```
 genespeak-drug-discovery/
 ├── f_p/
-│   └── f_p_smalltargets.ipynb
+│   └── f_p_smalltargets.ipynb  #DRUG CANDIDATE 모듈 학습 코드
 ├── f_r/
-│   └── f_r_onalldata_withcellline.ipynb
+│   └── f_r_onalldata_withcellline.ipynb  #RESPONSE PREDICTION 모듈 코드
 └── repository-root/
 └── making_data/
     ├── README.md                   
     ├── analysis1.ipynb              # exploratory analysis / preparation notebook
     ├── cell2id.csv                  # mapping: cell_name -> integer id
-    ├── cell_embeddings.npy          # precomputed cell embeddings (numpy)
+    ├── cell_embeddings.npy          # precomputed cell embeddings 
     ├── cell_line_metadata.parquet   # cell line metadata table
     ├── drug_metadata.parquet        # drug metadata table
-    ├── drug_smiles_emb_all.pt       # SMILES/drug embeddings (PyTorch)
+    ├── drug_smiles_emb_all.pt       # SMILES/drug embeddings
     └── gene_metadata.parquet        # gene metadata table
 
 ```
@@ -47,13 +47,6 @@ genespeak-drug-discovery/
 ### Data Source
 - [TAHOE-100M](https://huggingface.co/datasets/tahoebio/Tahoe-100M) single-cell perturbation dataset (Parquet format)
 - 각 샘플은 `(drug, cell line, gene)` 단위의 발현 반응 정보를 포함
-<br/>
-
----
-
-### Baseline Normalization
-- 모든 발현값은 **ΔExpression** (발현 변화량)으로 변환
-- 기준 베이스라인은 각 세포주별 **DMSO-treated control**
 <br/>
 
 ---
@@ -75,36 +68,55 @@ genespeak-drug-discovery/
 <br/>
 
 ## 🧠 Methods
-본 연구는 두 가지 주요 모듈로 구성됩니다.
-  
-### 1) Forward Prediction (Response Modeling)
-- 입력: `(drug, cell line)` 쌍
-- 출력: 약물 처리 후 **ΔExpression 벡터**
-- Transformer encoder를 사용하여 유전자 토큰 시퀀스를 모델링
-- 세포주 정보를 명시적인 토큰으로 주입하여 cell-specific response를 학습
-  
-### 2) Inverse Retrieval (Drug Ranking)
-- 입력: 쿼리 ΔExpression signature
-- 후보 약물에 대해 예측된 반응과의 유사도를 계산
-- 유사도 기반으로 약물 랭킹 산출
-- Retrieval 안정성을 위해 ranking-aware loss를 함께 사용
-<br/>
-<br/>
+###Inverse Retrieval (Drug Candidate Retrieval/Ranking; f_p 또는 f_dc)
+**목표:** 주어진 **쿼리 시그니처(ΔX_query)** 에 대해, 이를 가장 잘 설명(또는 재현)할 수 있는 **후보 약물**을 검색/랭킹합니다.
 
-## 🧪 Experiments
+- **입력:** 쿼리 ΔExpression signature `ΔX_query`
+- **출력:** 후보 약물들에 대한 점수/랭킹 `score(drug | ΔX_query)`
+- **핵심 아이디어:**  
+  ΔX_query를 임베딩으로 인코딩한 뒤, **정답 약물(positive)** 과는 가깝게, 다른 약물(negatives)과는 멀어지도록 학습합니다.
+
+- **학습 데이터:** (drug, cell line) → 관측 ΔX 를 이용하여  
+  `ΔX` 를 해당 drug의 **positive query** 로 사용하고, 동일 배치/라이브러리 내 다른 drug들을 **negative** 로 샘플링
+
+- **학습 목적함수(예시):**
+  - **Ranking/Contrastive 손실 (InfoNCE):**  
+    `L_rank = -log exp(sim(q, d+)/τ) / Σ exp(sim(q, d_i)/τ)`
+    - `q = Enc(ΔX)` : 시그니처 인코더 출력  
+    - `d+` : 정답 약물 임베딩, `d_i` : negative 약물 임베딩  
+    - `sim(·)` : cosine 또는 dot-product, `τ` : temperature
+  - (선택) **BCE 기반 retrieval 손실:** 후보 약물 전체(또는 sampled set)에 대해 정답/비정답을 분류하도록 보조 학습
+
+> inverse 모듈은 “이 ΔX를 만든(또는 반대로 만들 수 있는) 약이 무엇인가?”를 푸는 **검색/랭킹 모듈**입니다.
+
+### Forward Prediction (Response Prediction; f_r)
+**목표:** 특정 조건에서의 세포 상태(기저 발현)와 약물 정보를 바탕으로, 약물 처리 후 **유전자 발현 변화(ΔX)** 를 예측합니다.
+
+- **입력:**
+  - **기저 발현 프로필** `X_base` (예: DMSO / pre-treatment expression)
+  - **약물 표현** (예: SMILES embedding 또는 drug embedding)
+  - (선택) **cell-line 정보** (cell token/embedding)
+
+- **표현 방식 (Cell2Sentence 스타일):**
+  - 유전자들을 토큰 시퀀스로 구성하고, 각 토큰은
+    - `gene id embedding` + `expression value embedding(또는 bin embedding)`  
+    (+ 필요 시 positional/attribute embedding)
+  - 시퀀스에 `[CELL]` 같은 컨텍스트 토큰을 포함해 cell-specific context를 주입할 수 있음
+
+- **출력:**
+  - 예측된 `\hat{ΔX} ∈ R^G` (G: 사용 유전자 수, 예: HVG)
+  - (대안) `\hat{X_after} = X_base + \hat{ΔX}` 형태로 after-expression을 직접 구성
+
+- **학습 데이터:** `(X_base, drug, cell)` → 관측 `ΔX = X_treated − X_base`
+- **학습 목적함수(예시):**
+  - **재구성(회귀) 손실:** `L_rec = MSE(ΔX, \hat{ΔX})` (또는 Huber)
+  - (선택) **패턴 보존 보조 손실:** cosine 유사도 기반 항 등
 
 ---
-
-### Tasks
-
-#### 1) Forward Prediction
-- 주어진 약물–세포주 쌍에 대해 유전자 발현 변화 예측
-  
-#### 2) Inverse Retrieval
-- 쿼리 ΔExpression signature에 대해:
-  - 예측된 반응과의 유사도 계산
-  - 후보 약물 순위 산출
-<br/>
+### Inference (실사용 흐름)
+1) 입력으로 받은 `ΔX_query` 에 대해 inverse 모듈로 **Top-K 후보 약물**을 검색  
+2) 각 후보 약물에 대해 f_r로 `\hat{ΔX}(drug, cell)` 를 예측(또는 조건에 맞는 response 시뮬레이션)  
+3) `ΔX_query` 와 `\hat{ΔX}` 의 유사도/오차를 기반으로 **재랭킹(re-ranking)** 하여 최종 후보를 출력
 
 ---
 
