@@ -1,8 +1,16 @@
 Kseniia Vaniushkina – ML Engineer & Data Scientist
 
-현실의 복잡하고 노이즈가 많은 데이터를 실제로 동작하는 제품으로 구현하는 Applied ML Engineer입니다. 텍스트(NLP), 의료 신호(예: CGM 시계열), 바이오인포매틱스(예: 단일세포 전사체) 데이터를 다루며, Transformer 기반 언어모델을 학습·파인튜닝하고 다국어 텍스트 이해/분류뿐 아니라 임베딩 기반 검색·랭킹 및 문서 처리 파이프라인을 end-to-end로 개발해 왔습니다. 또한 의료 시계열 예측과 바이오 데이터 기반 모델링 경험을 바탕으로, FastAPI 기반 추론 API로 서비스에 통합하고 데이터 품질·정량 평가·배포까지 지표 중심으로 수행합니다.
+한국에서 4년 6개월간 거주하며 학업과 프로젝트 경험을 쌓아 온 Machine Learning Engineer입니다. 러시아에서 Data Science 및 Machine Learning 관련
+전문 교육과정을 이수한 뒤, 한국에서 아이펠(모두의연구소) AI Research / Machine Learning 과정을 수료하며 Applied ML 역량을 확장했습니다. 텍스트,
+의료 시계열, 바이오인포매틱스 데이터를 다루며 Transformer 기반 언어모델 학습 및 파인튜닝, 다국어 텍스트 이해·분류, 임베딩 기반 검색·랭킹, 문서 처
+리 파이프라인을 end-to-end로 개발해 왔습니다. 또한 영어 기반 논문과 기술 문서를 활용한 리서치 및 개발이 가능하며, FastAPI 기반 추론 API 연동부
+터 데이터 품질 관리, 정량 평가, 배포까지 실제 서비스 관점에서 수행해 왔습니다
 
-Applied ML Engineer who turns complex, noisy real-world data into reliable, working products. I work across text, medical signals (e.g., CGM time series), and bioinformatics (e.g., single-cell transcriptomics)—training and fine-tuning Transformer-based language models, and building end-to-end pipelines for multilingual text understanding/classification, embedding-based retrieval and ranking, and document processing. I also develop medical time-series forecasting and bio-data modeling solutions, integrating models into user-facing services via FastAPI and driving data quality, quantitative evaluation, and deployment with a metrics-first approach.
+I am a Machine Learning Engineer based in South Korea, with 4.5 years of experience living and studying in Korea while building hands-on experience through academic training and applied AI projects. I am comfortable working in both Korean and English, and I have strong communication skills in Korean for academic, professional, and collaborative environments.
+
+I have worked with text, medical time-series, and bioinformatics data, developing end-to-end machine learning pipelines for Transformer-based language model training and fine-tuning, multilingual text understanding and classification, embedding-based retrieval and ranking, and document processing.
+ 
+I am also experienced in reading and applying English-language research papers and technical documentation in development work. From a practical service perspective, I have contributed across the full ML lifecycle, including FastAPI-based inference API integration, data quality management, quantitative evaluation, and deployment.
 
 
 ## 📄 Resume
