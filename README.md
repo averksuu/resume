@@ -28,6 +28,7 @@ All of my completed courses and programs are available below:
 
 | Course / Program                                                | Institution                  | Date       | Link                                          |
 |-----------------------------------------------------------------|------------------------------|------------|-----------------------------------------------|
+| AI Researcher Track                                             | Aiffel (Modulabs)            | 2026       | [Certificate](certificates/Aiffel_Certificate.pdf)                   |
 | Data Science, Neural Networks & AI                              | Terra AI Neural University   |2024-2025   | [Certificate](certificates/TerraAI_Certificate.pdf) \| [EN translation](certificates/TerraAI_Certificate_EN.md) |          
 | Machine Learning Specialization                                 | DeepLearning.AI & Stanford   | Mar 2025   | [Certificate](certificates/ML_Specialization.pdf)             |
 | Natural Language Processing Specialization                      | DeepLearning.AI & Stanford   | May 2025   | [Certificate](certificates/NLP_Specialization.pdf)            |
